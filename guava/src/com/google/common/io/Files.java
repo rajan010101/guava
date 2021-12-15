@@ -18,7 +18,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.io.FileWriteMode.APPEND;
 
-import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -32,6 +31,7 @@ import com.google.common.graph.Traverser;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.InlineMe;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -85,7 +85,6 @@ public final class Files {
    *     helpful predefined constants
    * @return the buffered reader
    */
-  @Beta
   public static BufferedReader newReader(File file, Charset charset) throws FileNotFoundException {
     checkNotNull(file);
     checkNotNull(charset);
@@ -104,7 +103,6 @@ public final class Files {
    *     helpful predefined constants
    * @return the buffered writer
    */
-  @Beta
   public static BufferedWriter newWriter(File file, Charset charset) throws FileNotFoundException {
     checkNotNull(file);
     checkNotNull(charset);
@@ -235,7 +233,6 @@ public final class Files {
    *     (2^31 - 1)
    * @throws IOException if an I/O error occurs
    */
-  @Beta
   public static byte[] toByteArray(File file) throws IOException {
     return asByteSource(file).read();
   }
@@ -248,11 +245,12 @@ public final class Files {
    *     helpful predefined constants
    * @return a string containing all the characters from the file
    * @throws IOException if an I/O error occurs
-   * @deprecated Prefer {@code asCharSource(file, charset).read()}. This method is scheduled to be
-   *     removed in October 2019.
+   * @deprecated Prefer {@code asCharSource(file, charset).read()}.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asCharSource(file, charset).read()",
+      imports = "com.google.common.io.Files")
   public static String toString(File file, Charset charset) throws IOException {
     return asCharSource(file, charset).read();
   }
@@ -267,7 +265,6 @@ public final class Files {
    * @param to the destination file
    * @throws IOException if an I/O error occurs
    */
-  @Beta
   public static void write(byte[] from, File to) throws IOException {
     asByteSink(to).write(from);
   }
@@ -280,11 +277,12 @@ public final class Files {
    * @param charset the charset used to encode the output stream; see {@link StandardCharsets} for
    *     helpful predefined constants
    * @throws IOException if an I/O error occurs
-   * @deprecated Prefer {@code asCharSink(to, charset).write(from)}. This method is scheduled to be
-   *     removed in October 2019.
+   * @deprecated Prefer {@code asCharSink(to, charset).write(from)}.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asCharSink(to, charset).write(from)",
+      imports = "com.google.common.io.Files")
   public static void write(CharSequence from, File to, Charset charset) throws IOException {
     asCharSink(to, charset).write(from);
   }
@@ -299,7 +297,6 @@ public final class Files {
    * @param to the output stream
    * @throws IOException if an I/O error occurs
    */
-  @Beta
   public static void copy(File from, OutputStream to) throws IOException {
     asByteSource(from).copyTo(to);
   }
@@ -323,7 +320,6 @@ public final class Files {
    * @throws IOException if an I/O error occurs
    * @throws IllegalArgumentException if {@code from.equals(to)}
    */
-  @Beta
   public static void copy(File from, File to) throws IOException {
     checkArgument(!from.equals(to), "Source %s and destination %s must be different", from, to);
     asByteSource(from).copyTo(asByteSink(to));
@@ -337,11 +333,12 @@ public final class Files {
    *     helpful predefined constants
    * @param to the appendable object
    * @throws IOException if an I/O error occurs
-   * @deprecated Prefer {@code asCharSource(from, charset).copyTo(to)}. This method is scheduled to
-   *     be removed in October 2019.
+   * @deprecated Prefer {@code asCharSource(from, charset).copyTo(to)}.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asCharSource(from, charset).copyTo(to)",
+      imports = "com.google.common.io.Files")
   public
   static void copy(File from, Charset charset, Appendable to) throws IOException {
     asCharSource(from, charset).copyTo(to);
@@ -358,8 +355,10 @@ public final class Files {
    * @deprecated Prefer {@code asCharSink(to, charset, FileWriteMode.APPEND).write(from)}. This
    *     method is scheduled to be removed in October 2019.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asCharSink(to, charset, FileWriteMode.APPEND).write(from)",
+      imports = {"com.google.common.io.FileWriteMode", "com.google.common.io.Files"})
   public
   static void append(CharSequence from, File to, Charset charset) throws IOException {
     asCharSink(to, charset, FileWriteMode.APPEND).write(from);
@@ -370,7 +369,6 @@ public final class Files {
    *
    * @throws IOException if an I/O error occurs
    */
-  @Beta
   public static boolean equal(File file1, File file2) throws IOException {
     checkNotNull(file1);
     checkNotNull(file2);
@@ -421,7 +419,6 @@ public final class Files {
    *     java.nio.file.Files#createTempDirectory}, transforming it to a {@link File} using {@link
    *     java.nio.file.Path#toFile() toFile()} if needed.
    */
-  @Beta
   @Deprecated
   public static File createTempDir() {
     File baseDir = new File(System.getProperty("java.io.tmpdir"));
@@ -452,7 +449,6 @@ public final class Files {
    * @param file the file to create or update
    * @throws IOException if an I/O error occurs
    */
-  @Beta
   @SuppressWarnings("GoodTime") // reading system time without TimeSource
   public static void touch(File file) throws IOException {
     checkNotNull(file);
@@ -470,7 +466,6 @@ public final class Files {
    *     directories of the specified file could not be created.
    * @since 4.0
    */
-  @Beta
   public static void createParentDirs(File file) throws IOException {
     checkNotNull(file);
     File parent = file.getCanonicalFile().getParentFile();
@@ -501,7 +496,6 @@ public final class Files {
    * @throws IOException if an I/O error occurs
    * @throws IllegalArgumentException if {@code from.equals(to)}
    */
-  @Beta
   public static void move(File from, File to) throws IOException {
     checkNotNull(from);
     checkNotNull(to);
@@ -527,11 +521,12 @@ public final class Files {
    *     helpful predefined constants
    * @return the first line, or null if the file is empty
    * @throws IOException if an I/O error occurs
-   * @deprecated Prefer {@code asCharSource(file, charset).readFirstLine()}. This method is
-   *     scheduled to be removed in October 2019.
+   * @deprecated Prefer {@code asCharSource(file, charset).readFirstLine()}.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asCharSource(file, charset).readFirstLine()",
+      imports = "com.google.common.io.Files")
   @CheckForNull
   public
   static String readFirstLine(File file, Charset charset) throws IOException {
@@ -554,7 +549,6 @@ public final class Files {
    * @return a mutable {@link List} containing all the lines
    * @throws IOException if an I/O error occurs
    */
-  @Beta
   public static List<String> readLines(File file, Charset charset) throws IOException {
     // don't use asCharSource(file, charset).readLines() because that returns
     // an immutable list, which would change the behavior of this method
@@ -586,11 +580,12 @@ public final class Files {
    * @param callback the {@link LineProcessor} to use to handle the lines
    * @return the output of processing the lines
    * @throws IOException if an I/O error occurs
-   * @deprecated Prefer {@code asCharSource(file, charset).readLines(callback)}. This method is
-   *     scheduled to be removed in October 2019.
+   * @deprecated Prefer {@code asCharSource(file, charset).readLines(callback)}.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asCharSource(file, charset).readLines(callback)",
+      imports = "com.google.common.io.Files")
   @CanIgnoreReturnValue // some processors won't return a useful result
   @ParametricNullness
   public
@@ -608,11 +603,12 @@ public final class Files {
    * @param processor the object to which the bytes of the file are passed.
    * @return the result of the byte processor
    * @throws IOException if an I/O error occurs
-   * @deprecated Prefer {@code asByteSource(file).read(processor)}. This method is scheduled to be
-   *     removed in October 2019.
+   * @deprecated Prefer {@code asByteSource(file).read(processor)}.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asByteSource(file).read(processor)",
+      imports = "com.google.common.io.Files")
   @CanIgnoreReturnValue // some processors won't return a useful result
   @ParametricNullness
   public
@@ -629,11 +625,12 @@ public final class Files {
    * @return the {@link HashCode} of all of the bytes in the file
    * @throws IOException if an I/O error occurs
    * @since 12.0
-   * @deprecated Prefer {@code asByteSource(file).hash(hashFunction)}. This method is scheduled to
-   *     be removed in October 2019.
+   * @deprecated Prefer {@code asByteSource(file).hash(hashFunction)}.
    */
-  @Beta
   @Deprecated
+  @InlineMe(
+      replacement = "Files.asByteSource(file).hash(hashFunction)",
+      imports = "com.google.common.io.Files")
   public
   static HashCode hash(File file, HashFunction hashFunction) throws IOException {
     return asByteSource(file).hash(hashFunction);
@@ -654,7 +651,6 @@ public final class Files {
    * @see FileChannel#map(MapMode, long, long)
    * @since 2.0
    */
-  @Beta
   public static MappedByteBuffer map(File file) throws IOException {
     checkNotNull(file);
     return map(file, MapMode.READ_ONLY);
@@ -677,7 +673,6 @@ public final class Files {
    * @see FileChannel#map(MapMode, long, long)
    * @since 2.0
    */
-  @Beta
   public static MappedByteBuffer map(File file, MapMode mode) throws IOException {
     return mapInternal(file, mode, -1);
   }
@@ -701,7 +696,6 @@ public final class Files {
    * @see FileChannel#map(MapMode, long, long)
    * @since 2.0
    */
-  @Beta
   public static MappedByteBuffer map(File file, MapMode mode, long size) throws IOException {
     checkArgument(size >= 0, "size (%s) may not be negative", size);
     return mapInternal(file, mode, size);
@@ -745,7 +739,6 @@ public final class Files {
    *
    * @since 11.0
    */
-  @Beta
   public static String simplifyPath(String pathname) {
     checkNotNull(pathname);
     if (pathname.length() == 0) {
@@ -806,7 +799,6 @@ public final class Files {
    *
    * @since 11.0
    */
-  @Beta
   public static String getFileExtension(String fullName) {
     checkNotNull(fullName);
     String fileName = new File(fullName).getName();
@@ -824,7 +816,6 @@ public final class Files {
    * @return The file name without its path or extension.
    * @since 14.0
    */
-  @Beta
   public static String getNameWithoutExtension(String file) {
     checkNotNull(file);
     String fileName = new File(file).getName();
@@ -854,7 +845,6 @@ public final class Files {
    *
    * @since 23.5
    */
-  @Beta
   public static Traverser<File> fileTraverser() {
     return Traverser.forTree(FILE_TREE);
   }
@@ -880,7 +870,6 @@ public final class Files {
    *
    * @since 15.0
    */
-  @Beta
   public static Predicate<File> isDirectory() {
     return FilePredicate.IS_DIRECTORY;
   }
@@ -890,7 +879,6 @@ public final class Files {
    *
    * @since 15.0
    */
-  @Beta
   public static Predicate<File> isFile() {
     return FilePredicate.IS_FILE;
   }
